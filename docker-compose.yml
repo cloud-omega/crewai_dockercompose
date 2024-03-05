@@ -25,5 +25,5 @@ volumes:
   model:
      driver_opts:
            type: none
-           device: "${VOL_EMB}/model"
+           device: "${VOL_EMB}"
            o: bind
