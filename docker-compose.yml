@@ -18,8 +18,8 @@ services:
     #command: python3 app.py
     command: tail -f /dev/null #keep it running
     environment:
-      - MODEL
-      - BASE_URL
+      - OLLAMA_MODEL
+      - OLLAMA_BASE_URL
 
 volumes:
   model:
