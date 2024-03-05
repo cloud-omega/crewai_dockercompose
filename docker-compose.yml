@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+
+  llm: 
+    container_name: llm
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - model:/root/.ollama
+
+  localaigents:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aigen_crewai
+    working_dir: /app
+    #command: python3 app.py
+    command: tail -f /dev/null #keep it running
+    environment:
+      - MODEL
+      - BASE_URL
+
+volumes:
+  model:
+     driver_opts:
+           type: none
+           device: "${VOL_EMB}/model"
+           o: bind
