@@ -46,4 +46,4 @@ jobs:
         run: docker compose up -d --wait
 
       - name: Update models
-        run: docker  exec -it llm ollama pull ${OLLAMA_MODEL} && docker  exec -it llm ollama pull ${EMBEDDING_MODEL}
+        run: docker exec llm ollama pull ${OLLAMA_MODEL} && docker exec llm ollama pull ${EMBEDDING_MODEL}
