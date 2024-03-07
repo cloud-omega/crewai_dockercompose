@@ -1,0 +1,49 @@
+name: Docker Compose Up for Production
+
+on:
+  push:
+    branches: [ production ]
+
+jobs:
+  run:
+    runs-on: self-hosted
+    env:
+      TZ: America/Sao_Paulo
+      APP: ${{ github.event.repository.name }}
+      DOMAIN_NAME: ${{ secrets.GR_URL }}
+      EMBEDDING_MODEL: nomic-embed-text:latest  
+      OLLAMA_MODEL: llama2:13b
+      OLLAMA_BASE_URL: http://llm:11434
+      VOL_OLLAMA: /opt/files/ollama
+      VOL_ANYLLM: /opt/files/anythingllm
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+      #OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      #LANGCHAIN_ENDPOINT: "https://api.smith.langchain.com"
+      #LANGCHAIN_TRACING_V2: true
+      #LANGCHAIN_PROJECT: ${{ secrets.LANGCHAIN_PROJECT }}
+      #LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
+    steps:
+      - uses: actions/checkout@main
+
+      #- name: Login to Docker Hub (optional)
+      #  run: |
+      #    echo "$DOCKER_HUB_USERNAME:$DOCKER_HUB_PASSWORD" | docker login --username --password-stdin
+
+      - name: Prepare
+        if: always()
+        run: mkdir -p $VOL_OLLAMA && mkdir -p ${VOL_ANYLLM}/colhotd && mkdir -p ${VOL_ANYLLM}/colout && mkdir -p ${VOL_ANYLLM}/storage
+        
+      - name: Update Docker Compose
+        if: always()
+        run: docker compose build && docker compose pull
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose down --remove-orphans 
+        
+      - name: Run Docker Compose Up
+        run: docker compose up -d --wait
+
+      - name: Update models
+        run: docker  exec -it llm ollama pull ${OLLAMA_MODEL} && docker  exec -it llm ollama pull ${EMBEDDING_MODEL}

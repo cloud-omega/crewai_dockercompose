@@ -9,7 +9,7 @@ RUN pip install -r requirements.txt
 # Keep the container running
 CMD ["tail", "-f", "/dev/null"]
 
-COPY . ./
+COPY main.py ./
 
 #docker build -t crewai .
 
